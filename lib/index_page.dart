@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'songs_swiper.dart';
 import 'app_drawer.dart';
+import 'bible_verse_card.dart';
 
 class IndexPage extends StatefulWidget {
   const IndexPage({super.key});
@@ -128,11 +129,29 @@ class _IndexPageState extends State<IndexPage> {
         songs: _songs,
       ),
       appBar: AppBar(
-        title: const Text('Song Index'),
+        elevation: 0,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.deepPurple.shade400, Colors.deepPurple.shade700],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        title: const Text(
+          'Song Index',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        iconTheme: const IconThemeData(color: Colors.white),
         actions: [
           IconButton(
             icon: Icon(_sortByName ? Icons.sort_by_alpha : Icons.format_list_numbered),
             tooltip: _sortByName ? 'Sort by Number' : 'Sort by Name',
+            color: Colors.white,
             onPressed: () {
               setState(() {
                 _sortByName = !_sortByName;
@@ -143,6 +162,7 @@ class _IndexPageState extends State<IndexPage> {
       ),
       body: Column(
         children: [
+          const BibleVerseCard(),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
@@ -169,10 +189,46 @@ class _IndexPageState extends State<IndexPage> {
                     itemBuilder: (context, i) {
                       final name = filteredIndex[i][0];
                       final number = filteredIndex[i][1];
-                      return ListTile(
-                        title: Text(name),
-                        subtitle: Text('Song $number'),
-                        onTap: () => _openSong(context, number),
+                      return TweenAnimationBuilder<double>(
+                        duration: Duration(milliseconds: 300 + (i * 50).clamp(0, 500)),
+                        tween: Tween(begin: 0.0, end: 1.0),
+                        builder: (context, value, child) {
+                          return Opacity(
+                            opacity: value,
+                            child: Transform.translate(
+                              offset: Offset(20 * (1 - value), 0),
+                              child: child,
+                            ),
+                          );
+                        },
+                        child: Card(
+                          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          elevation: 2,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: Colors.deepPurple.shade100,
+                              child: Text(
+                                number,
+                                style: TextStyle(
+                                  color: Colors.deepPurple.shade700,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            title: Text(
+                              name,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            subtitle: Text('Song $number'),
+                            trailing: Icon(Icons.chevron_right, color: Colors.deepPurple.shade300),
+                            onTap: () => _openSong(context, number),
+                          ),
+                        ),
                       );
                     },
                   ),
@@ -188,50 +244,65 @@ class _IndexPageState extends State<IndexPage> {
   }
 
   Widget _buildAlphabetScrollBar(List<List<String>> sortedIndex) {
-    // Get unique starting letters
-    final letters = <String>[];
-    for (final item in sortedIndex) {
-      final firstChar = item[0].isNotEmpty ? item[0][0] : '';
-      if (firstChar.isNotEmpty && !letters.contains(firstChar)) {
-        letters.add(firstChar);
+    // Get unique starting letters with their indices
+    final letterMap = <String, int>{};
+    for (int i = 0; i < sortedIndex.length; i++) {
+      final firstChar = sortedIndex[i][0].isNotEmpty ? sortedIndex[i][0][0] : '';
+      if (firstChar.isNotEmpty && !letterMap.containsKey(firstChar)) {
+        letterMap[firstChar] = i;
       }
     }
+    final letters = letterMap.keys.toList();
 
     return Container(
-      width: 40,
-      decoration: BoxDecoration(
-        color: Colors.grey[300],
-        border: Border(left: BorderSide(color: Colors.grey[400]!, width: 1)),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: letters.map((letter) {
-          return GestureDetector(
-            onTap: () {
-              // Find the first song starting with this letter
-              final targetIndex = sortedIndex.indexWhere((item) => item[0].startsWith(letter));
-              if (targetIndex != -1 && _scrollController.hasClients) {
-                // Scroll to the position (approximate)
-                _scrollController.animateTo(
-                  targetIndex * 72.0, // Approximate ListTile height
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                );
-              }
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
-              child: Text(
-                letter,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blue,
+      width: 24,
+      margin: const EdgeInsets.only(right: 4),
+      child: Theme(
+        data: ThemeData(
+          scrollbarTheme: ScrollbarThemeData(
+            thumbColor: MaterialStateProperty.all(Colors.transparent),
+            trackColor: MaterialStateProperty.all(Colors.transparent),
+          ),
+        ),
+        child: ListView.builder(
+          itemCount: letters.length,
+          padding: EdgeInsets.zero,
+          physics: const NeverScrollableScrollPhysics(),
+          itemBuilder: (context, index) {
+            final letter = letters[index];
+            return GestureDetector(
+              onTap: () {
+                final targetIndex = letterMap[letter]!;
+                if (_scrollController.hasClients) {
+                  _scrollController.animateTo(
+                    targetIndex * 76.0, // Card height + margins
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                  );
+                }
+              },
+              child: Container(
+                height: MediaQuery.of(context).size.height / letters.length,
+                alignment: Alignment.center,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: Colors.deepPurple.shade100,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    letter,
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.deepPurple.shade700,
+                    ),
+                  ),
                 ),
               ),
-            ),
-          );
-        }).toList(),
+            );
+          },
+        ),
       ),
     );
   }

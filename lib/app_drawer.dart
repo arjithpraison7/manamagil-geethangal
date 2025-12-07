@@ -28,13 +28,45 @@ class AppDrawer extends StatelessWidget {
         children: [
           DrawerHeader(
             decoration: BoxDecoration(
-              color: Colors.deepPurple,
-            ),
-            child: Center(
-              child: Text(
-                'Menu',
-                style: TextStyle(color: Colors.white, fontSize: 24),
+              gradient: LinearGradient(
+                colors: [Colors.deepPurple.shade400, Colors.deepPurple.shade700, Colors.purple.shade900],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.church,
+                    size: 48,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'மனமகிழ் கீதங்கள்',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const Text(
+                  'Tamil Songs',
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: 12,
+                    letterSpacing: 2,
+                  ),
+                ),
+              ],
             ),
           ),
           ListTile(
