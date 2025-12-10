@@ -65,6 +65,8 @@ flutter:
   assets:
     - assets/songs_cleaned.json
     - assets/manamakizh_index.csv
+    - aruthal_geethangal.json
+    - sunday_school_songs_cleaned.json
 
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg

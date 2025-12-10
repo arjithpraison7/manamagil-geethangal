@@ -41,9 +41,17 @@ class SongsApp extends StatelessWidget {
   }
 }
 
+
 class SongsSwiperPage extends StatefulWidget {
   final int initialIndex;
-  const SongsSwiperPage({super.key, this.initialIndex = 0});
+  final String assetPath;
+  final String appBarTitle;
+  const SongsSwiperPage({
+    super.key,
+    this.initialIndex = 0,
+    this.assetPath = 'assets/songs_cleaned.json',
+    this.appBarTitle = 'Songs',
+  });
 
   @override
   State<SongsSwiperPage> createState() => _SongsSwiperPageState();
@@ -113,7 +121,7 @@ class _SongsSwiperPageState extends State<SongsSwiperPage> {
   }
 
   Future<void> _loadSongs() async {
-    final String jsonString = await rootBundle.loadString('assets/songs_cleaned.json');
+    final String jsonString = await rootBundle.loadString(widget.assetPath);
     setState(() {
       _songs = json.decode(jsonString);
       _loading = false;
@@ -176,21 +184,7 @@ class _SongsSwiperPageState extends State<SongsSwiperPage> {
             ),
           ),
         ),
-        title: Hero(
-          tag: 'appTitle',
-          child: Material(
-            color: Colors.transparent,
-            child: Text(
-              _getSongHeaderText(song),
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ),
+        title: Text(widget.appBarTitle),
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
         actions: [
