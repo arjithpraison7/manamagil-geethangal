@@ -5,12 +5,17 @@ import 'favourites_page.dart';
 import 'songs_swiper.dart';
 import 'theme_page.dart';
 import 'about_page.dart';
+import 'main.dart';
+import 'songbook_index_page.dart';
 
 class AppDrawer extends StatelessWidget {
   final BuildContext context;
   final Set<int> favourites;
   final List<dynamic> songs;
   final Function(int)? onSongSelected;
+  final String? currentSongsAssetPath;
+  final String? currentIndexAssetPath;
+  final String? currentAppBarTitle;
 
   const AppDrawer({
     Key? key,
@@ -18,6 +23,9 @@ class AppDrawer extends StatelessWidget {
     required this.favourites,
     required this.songs,
     this.onSongSelected,
+    this.currentSongsAssetPath,
+    this.currentIndexAssetPath,
+    this.currentAppBarTitle,
   }) : super(key: key);
 
   @override
@@ -50,12 +58,17 @@ class AppDrawer extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 12),
-                const Text(
-                  'மனமகிழ் கீதங்கள்',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+                Flexible(
+                  child: Text(
+                    currentAppBarTitle ?? 'மனமகிழ் கீதங்கள்',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 const Text(
@@ -70,19 +83,53 @@ class AppDrawer extends StatelessWidget {
             ),
           ),
           ListTile(
-            leading: Icon(Icons.list),
-            title: Text('Index'),
+            leading: const Icon(Icons.library_books),
+            title: const Text(
+              'Switch Category',
+              overflow: TextOverflow.ellipsis,
+            ),
             onTap: () {
               Navigator.pop(context);
-              Navigator.pushReplacement(
+              Navigator.pushAndRemoveUntil(
                 context,
-                MaterialPageRoute(builder: (_) => const IndexPage()),
+                MaterialPageRoute(builder: (_) => const SongbookSelectionPage()),
+                (route) => false,
               );
             },
           ),
           ListTile(
-            leading: Icon(Icons.music_note),
-            title: Text('Go to Song'),
+            leading: const Icon(Icons.list),
+            title: const Text(
+              'Index',
+              overflow: TextOverflow.ellipsis,
+            ),
+            onTap: () {
+              Navigator.pop(context);
+              if (currentSongsAssetPath != null && currentIndexAssetPath != null && currentAppBarTitle != null) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => SongbookIndexPage(
+                      songsAssetPath: currentSongsAssetPath!,
+                      indexAssetPath: currentIndexAssetPath!,
+                      appBarTitle: currentAppBarTitle!,
+                    ),
+                  ),
+                );
+              } else {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const IndexPage()),
+                );
+              }
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.music_note),
+            title: const Text(
+              'Go to Song',
+              overflow: TextOverflow.ellipsis,
+            ),
             onTap: () async {
               Navigator.pop(context);
               final controller = TextEditingController();
@@ -110,7 +157,11 @@ class AppDrawer extends StatelessWidget {
               if (result != null && int.tryParse(result) != null) {
                 final enteredNumber = result.trim();
                 final songTitle = 'பாடல் $enteredNumber';
-                final idx = songs.indexWhere((s) => (s['title'] ?? '').toString().trim() == songTitle);
+                // Try exact match first, then prefix match
+                var idx = songs.indexWhere((s) => (s['title'] ?? '').toString().trim() == songTitle);
+                if (idx == -1) {
+                  idx = songs.indexWhere((s) => (s['title'] ?? '').toString().trim().startsWith('$songTitle '));
+                }
                 if (idx != -1 && onSongSelected != null) {
                   Navigator.pushReplacement(
                     context,
@@ -123,8 +174,11 @@ class AppDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: Icon(Icons.favorite),
-            title: Text('Favourites'),
+            leading: const Icon(Icons.favorite),
+            title: const Text(
+              'Favourites',
+              overflow: TextOverflow.ellipsis,
+            ),
             onTap: () {
               Navigator.pop(context);
               final favs = favourites.map((i) => {
@@ -151,8 +205,11 @@ class AppDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: Icon(Icons.search),
-            title: Text('Search'),
+            leading: const Icon(Icons.search),
+            title: const Text(
+              'Search',
+              overflow: TextOverflow.ellipsis,
+            ),
             onTap: () async {
               Navigator.pop(context);
               final controller = TextEditingController();
@@ -194,8 +251,11 @@ class AppDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: Icon(Icons.color_lens),
-            title: Text('Theme'),
+            leading: const Icon(Icons.color_lens),
+            title: const Text(
+              'Theme',
+              overflow: TextOverflow.ellipsis,
+            ),
             onTap: () async {
               Navigator.pop(context);
               final settings = await ThemeSettings.load();
@@ -213,8 +273,11 @@ class AppDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: Icon(Icons.info),
-            title: Text('About'),
+            leading: const Icon(Icons.info),
+            title: const Text(
+              'About',
+              overflow: TextOverflow.ellipsis,
+            ),
             onTap: () {
               Navigator.pop(context);
               Navigator.push(
@@ -224,15 +287,21 @@ class AppDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: Icon(Icons.help),
-            title: Text('Help'),
+            leading: const Icon(Icons.help),
+            title: const Text(
+              'Help',
+              overflow: TextOverflow.ellipsis,
+            ),
             onTap: () {
               Navigator.pop(context);
             },
           ),
           ListTile(
-            leading: Icon(Icons.exit_to_app),
-            title: Text('Exit'),
+            leading: const Icon(Icons.exit_to_app),
+            title: const Text(
+              'Exit',
+              overflow: TextOverflow.ellipsis,
+            ),
             onTap: () {
               SystemNavigator.pop();
             },

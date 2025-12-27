@@ -22,7 +22,7 @@ class ThemeSettings {
     this.gradientEndColor = Colors.purple,
     this.fontFamily = 'Default',
     this.lineSpacing = 1.5,
-    this.textAlignment = TextAlign.center,
+    this.textAlignment = TextAlign.left,
   });
 
   Map<String, dynamic> toJson() => {
@@ -47,7 +47,7 @@ class ThemeSettings {
       gradientEndColor: Color(json['gradientEndColor'] ?? Colors.purple.value),
       fontFamily: json['fontFamily'] ?? 'Default',
       lineSpacing: json['lineSpacing'] ?? 1.5,
-      textAlignment: TextAlign.values[json['textAlignment'] ?? 1],
+      textAlignment: TextAlign.values[json['textAlignment'] ?? 0],
     );
   }
 

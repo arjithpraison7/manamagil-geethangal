@@ -77,7 +77,7 @@ class _SongsSwiperPageState extends State<SongsSwiperPage> {
   }
 
   Future<void> _loadIndex() async {
-    final String csvString = await rootBundle.loadString('assets/manamakizh_index.csv');
+    final String csvString = await rootBundle.loadString(_getIndexPath());
     final lines = csvString.split('\n');
     final index = <List<String>>[];
     for (final line in lines) {
@@ -93,7 +93,15 @@ class _SongsSwiperPageState extends State<SongsSwiperPage> {
       _index = index;
     });
   }
-
+  String _getIndexPath() {
+    if (widget.assetPath.contains('sunday_school')) {
+      return 'assets/sunday_school_index.csv';
+    } else if (widget.assetPath.contains('aruthal')) {
+      return 'assets/aruthal_geethangal_index.csv';
+    } else {
+      return 'assets/manamakizh_index.csv';
+    }
+  }
   Future<void> _loadThemeSettings() async {
     final settings = await ThemeSettings.load();
     setState(() {
@@ -140,6 +148,35 @@ class _SongsSwiperPageState extends State<SongsSwiperPage> {
     });
   }
 
+  String _getFormattedTitle() {
+    if (_songs.isEmpty || _currentIndex >= _songs.length) return widget.appBarTitle;
+    
+    final song = _songs[_currentIndex];
+    final title = song['title']?.toString() ?? '';
+    
+    // Extract song number from title (e.g., "பாடல் 1" or "பாடல் 1 (பாமாலை 810)")
+    final match = RegExp(r'பாடல்\s+(\d+)').firstMatch(title);
+    if (match != null) {
+      final songNumber = match.group(1);
+      
+      // Try to find the song name from index
+      if (_index.isNotEmpty) {
+        final indexEntry = _index.firstWhere(
+          (entry) => entry[1] == songNumber,
+          orElse: () => ['', ''],
+        );
+        if (indexEntry[0].isNotEmpty) {
+          return 'பாடல் $songNumber : ${indexEntry[0]}';
+        }
+      }
+      
+      // Fallback to just song number if index not found
+      return 'பாடல் $songNumber';
+    }
+    
+    return title;
+  }
+
   String _getSongHeaderText(dynamic song) {
     // Try to get the index name for this song
     final songNumber = song['song_number']?.toString() ?? (_currentIndex + 1).toString();
@@ -167,6 +204,9 @@ class _SongsSwiperPageState extends State<SongsSwiperPage> {
         context: context,
         favourites: _favourites,
         songs: _songs,
+        currentSongsAssetPath: widget.assetPath,
+        currentIndexAssetPath: _getIndexPath(),
+        currentAppBarTitle: widget.appBarTitle,
         onSongSelected: (idx) {
           setState(() {
             _currentIndex = idx;
@@ -184,7 +224,13 @@ class _SongsSwiperPageState extends State<SongsSwiperPage> {
             ),
           ),
         ),
-        title: Text(widget.appBarTitle),
+        title: Text(
+          _loading ? widget.appBarTitle : _getFormattedTitle(),
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+          ),
+        ),
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
         actions: [

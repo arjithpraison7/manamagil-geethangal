@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter/services.dart';
-import 'songs_swiper.dart';
+import 'songbook_index_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -25,13 +25,13 @@ class MyApp extends StatelessWidget {
 class SongbookSelectionPage extends StatelessWidget {
   const SongbookSelectionPage({super.key});
 
-  void _openSongbook(BuildContext context, String assetPath, String title) {
+  void _openSongbook(BuildContext context, String songsAssetPath, String indexAssetPath, String title) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => SongsSwiperPage(
-          initialIndex: 0,
-          assetPath: assetPath,
+        builder: (context) => SongbookIndexPage(
+          songsAssetPath: songsAssetPath,
+          indexAssetPath: indexAssetPath,
           appBarTitle: title,
         ),
       ),
@@ -61,6 +61,7 @@ class SongbookSelectionPage extends StatelessWidget {
                 onPressed: () => _openSongbook(
                   context,
                   'assets/songs_cleaned.json',
+                  'assets/manamakizh_index.csv',
                   'Manamagil Geethangal',
                 ),
               ),
@@ -74,7 +75,8 @@ class SongbookSelectionPage extends StatelessWidget {
                 ),
                 onPressed: () => _openSongbook(
                   context,
-                  'sunday_school_songs_cleaned.json',
+                  'assets/sunday_school_songs_cleaned.json',
+                  'assets/sunday_school_index.csv',
                   'Vidumurai Vethagama Padalgal',
                 ),
               ),
@@ -88,7 +90,8 @@ class SongbookSelectionPage extends StatelessWidget {
                 ),
                 onPressed: () => _openSongbook(
                   context,
-                  'aruthal_geethangal.json',
+                  'assets/aruthal_geethangal.json',
+                  'assets/aruthal_geethangal_index.csv',
                   'Aruthal Geethangal',
                 ),
               ),

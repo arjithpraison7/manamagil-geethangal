@@ -37,26 +37,26 @@ class AboutPage extends StatelessWidget {
             ],
           ),
         ),
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: TweenAnimationBuilder<double>(
-              duration: const Duration(milliseconds: 800),
-              tween: Tween(begin: 0.0, end: 1.0),
-              builder: (context, value, child) {
-                return Opacity(
-                  opacity: value,
-                  child: Transform.scale(
-                    scale: 0.8 + (0.2 * value),
-                    child: child,
-                  ),
-                );
-              },
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+        child: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: TweenAnimationBuilder<double>(
+                duration: const Duration(milliseconds: 800),
+                tween: Tween(begin: 0.0, end: 1.0),
+                builder: (context, value, child) {
+                  return Opacity(
+                    opacity: value,
+                    child: Transform.scale(
+                      scale: 0.8 + (0.2 * value),
+                      child: child,
+                    ),
+                  );
+                },
+                child: Column(
+                  children: [
                   Container(
-                    padding: const EdgeInsets.all(24),
+                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [Colors.deepPurple.shade400, Colors.deepPurple.shade700],
@@ -74,32 +74,36 @@ class AboutPage extends StatelessWidget {
                     ),
                     child: const Icon(
                       Icons.church,
-                      size: 80,
+                      size: 60,
                       color: Colors.white,
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 24),
                   const Text(
                     'மனமகிழ் கீதங்கள்',
                     style: TextStyle(
-                      fontSize: 28,
+                      fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: Colors.deepPurple,
                     ),
+                    textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
                   const Text(
                     'Tamil Songs App',
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: 16,
                       fontWeight: FontWeight.w500,
                       color: Colors.deepPurple,
                       letterSpacing: 2,
                     ),
                   ),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 24),
                   Container(
-                    padding: const EdgeInsets.all(24),
+                    constraints: BoxConstraints(
+                      maxHeight: MediaQuery.of(context).size.height * 0.5,
+                    ),
+                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(16),
@@ -111,38 +115,83 @@ class AboutPage extends StatelessWidget {
                         ),
                       ],
                     ),
-                    child: Column(
-                      children: [
-                        const Text(
-                          'Developed by',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey,
-                            letterSpacing: 1,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          const Text(
+                            'பற்றி',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.deepPurple,
+                              letterSpacing: 1,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          'C.S.I All Saints\' Church',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.deepPurple.shade700,
+                          const SizedBox(height: 12),
+                          const Text(
+                            'ஆலய குடும்ப ஜெபக் கூடுகையின் பயன்பாட்டிற்காக  கிறிஸ்தவ பாடல்கள் மற்றும் கீர்த்தனைகளில் அடிக்கடி உபயோகப்படுத்தப்படும்  பாடல்களைத் தெரிவுசெய்து தொகுக்கப்பட்டது.',
+                            style: TextStyle(
+                              fontSize: 13,
+                              height: 1.5,
+                              color: Colors.black87,
+                            ),
+                            textAlign: TextAlign.justify,
                           ),
-                          textAlign: TextAlign.center,
-                        ),
-                        Text(
-                          'Triplicane',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.deepPurple.shade700,
+                          const SizedBox(height: 10),
+                          const Text(
+                            'அப்பாடல்கள், திருவல்லிக்கேணி    C.S.I. சகல பரிசுத்தவானகளின் ஆலயத்தின் வைர விழா (2008) ஆண்டின்போது  110 பாடல்களுடன் "மனமகிழ் கீதங்கள்" என்று புத்தகமாக வெளியிடப்பட்டது.',
+                            style: TextStyle(
+                              fontSize: 13,
+                              height: 1.5,
+                              color: Colors.black87,
+                            ),
+                            textAlign: TextAlign.justify,
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 10),
+                          const Text(
+                            'அந்தப் பாடல்களுடன் தற்பொழுது மேலும் 100 பாடல்கள் சேர்க்கப்பட்டுள்ளது.\nமேலும் இரங்கல் பாடல்களாக  "ஆறுதல் கீதங்கள்" என்ற தலைப்பில் பாடல்கள் தொகுக்கப்பட்டுள்ளது',
+                            style: TextStyle(
+                              fontSize: 13,
+                              height: 1.5,
+                              color: Colors.black87,
+                            ),
+                            textAlign: TextAlign.justify,
+                          ),
+                          const SizedBox(height: 10),
+                          const Text(
+                            'இந்தப் பாடல்கள் அனைத்தும் திரு C. இராஜரீகம் குணசேகரன் (Retd. Under Secretary to Government ) அவர்களால்,  திரு J. அறிவு கலைச்செல்வன் (Retd. Asst. Director of Co-operative Audit) அவர்களின் உதவியுடன் தொகுக்கப்படுள்ளது.',
+                            style: TextStyle(
+                              fontSize: 13,
+                              height: 1.5,
+                              color: Colors.black87,
+                            ),
+                            textAlign: TextAlign.justify,
+                          ),
+                          const SizedBox(height: 10),
+                          const Text(
+                            'திருமதி ஹில்டா இராஜரீகம் அவர்களால்   "90 ஞாயிறு பள்ளி பாடல்கள்" தொகுக்கப்பட்டு இத்துடன் சேர்க்கப்பட்டுள்ளது.',
+                            style: TextStyle(
+                              fontSize: 13,
+                              height: 1.5,
+                              color: Colors.black87,
+                            ),
+                            textAlign: TextAlign.justify,
+                          ),
+                          const SizedBox(height: 10),
+                          const Text(
+                            'இவைகளை "இயேசுவை போற்றும் பாடல்கள்" என்ற தலைப்பில் "செயலி" ஆக  வெளியிடப்பட்டுள்ளது',
+                            style: TextStyle(
+                              fontSize: 13,
+                              height: 1.5,
+                              color: Colors.black87,
+                            ),
+                            textAlign: TextAlign.justify,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 20),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
@@ -152,13 +201,15 @@ class AboutPage extends StatelessWidget {
                     child: const Text(
                       'Version 1.0.0',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 13,
                         color: Colors.deepPurple,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
+                  const SizedBox(height: 16),
                 ],
+                ),
               ),
             ),
           ),

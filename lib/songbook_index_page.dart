@@ -26,7 +26,7 @@ class _SongbookIndexPageState extends State<SongbookIndexPage> {
   List<dynamic> _songs = [];
   Set<int> _favourites = {};
   bool _loading = true;
-  bool _sortByName = true;
+  bool _sortByName = false;
   String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
@@ -90,7 +90,12 @@ class _SongbookIndexPageState extends State<SongbookIndexPage> {
     final String jsonString = await rootBundle.loadString(widget.songsAssetPath);
     final List songs = json.decode(jsonString);
     final songTitle = 'பாடல் $songNumberStr';
-    final idx = songs.indexWhere((s) => (s['title'] ?? '').toString().trim() == songTitle);
+    // Try exact match first, then try prefix match for songs with additional info in title
+    var idx = songs.indexWhere((s) => (s['title'] ?? '').toString().trim() == songTitle);
+    if (idx == -1) {
+      // If exact match fails, try matching songs that start with "பாடல் X "
+      idx = songs.indexWhere((s) => (s['title'] ?? '').toString().trim().startsWith('$songTitle '));
+    }
     if (idx != -1) {
       Navigator.push(
         context,
@@ -126,6 +131,9 @@ class _SongbookIndexPageState extends State<SongbookIndexPage> {
         context: context,
         favourites: _favourites,
         songs: _songs,
+        currentSongsAssetPath: widget.songsAssetPath,
+        currentIndexAssetPath: widget.indexAssetPath,
+        currentAppBarTitle: widget.appBarTitle,
       ),
       appBar: AppBar(
         elevation: 0,
