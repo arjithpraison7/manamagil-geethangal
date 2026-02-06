@@ -1,5 +1,5 @@
-name: songs_app
-description: "A new Flutter project."
+name: tamil_christian_songs
+description: "இயேசுவை போற்றும் பாடல்கள் - Tamil Christian Songs App"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.0+1
+version: 1.0.1+6
 
 environment:
   sdk: ^3.8.1
@@ -49,6 +49,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.14.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -63,12 +64,14 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/songs_cleaned.json
+    - assets/manamakizh_songs_cleaned.json
     - assets/manamakizh_index.csv
     - assets/aruthal_geethangal.json
     - assets/aruthal_geethangal_index.csv
     - assets/sunday_school_songs_cleaned.json
     - assets/sunday_school_index.csv
+    - assets/help/
+    - assets/LoadingScreen.GIF
 
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
@@ -98,3 +101,13 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  web:
+    generate: true
+    image_path: "AppIcon.png"
+  image_path: "AppIcon.png"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "AppIcon.png"

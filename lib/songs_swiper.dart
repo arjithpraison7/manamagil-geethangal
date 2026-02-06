@@ -49,7 +49,7 @@ class SongsSwiperPage extends StatefulWidget {
   const SongsSwiperPage({
     super.key,
     this.initialIndex = 0,
-    this.assetPath = 'assets/songs_cleaned.json',
+    this.assetPath = 'assets/manamakizh_songs_cleaned.json',
     this.appBarTitle = 'Songs',
   });
 
@@ -109,22 +109,102 @@ class _SongsSwiperPageState extends State<SongsSwiperPage> {
     });
   }
 
+  List<Map<String, dynamic>> _parseFavouriteEntries(List<String> raw) {
+    final entries = <Map<String, dynamic>>[];
+    for (final item in raw) {
+      try {
+        final decoded = json.decode(item);
+        if (decoded is Map<String, dynamic>) {
+          entries.add(decoded);
+        }
+      } catch (_) {
+        // ignore malformed entries
+      }
+    }
+    return entries;
+  }
+
+  String _deriveSongNumber(dynamic song, int index) {
+    final title = song is Map ? (song['title']?.toString() ?? '') : '';
+    final match = RegExp(r'பாடல்\s+(\d+)').firstMatch(title);
+    if (match != null) return match.group(1) ?? (index + 1).toString();
+    final englishMatch = RegExp(r'English Song\s+(\d+)').firstMatch(title);
+    if (englishMatch != null) return englishMatch.group(1) ?? (index + 1).toString();
+    return (song is Map && song['song_number'] != null)
+        ? song['song_number'].toString()
+        : (index + 1).toString();
+  }
+
   Future<void> _loadFavourites() async {
     final prefs = await SharedPreferences.getInstance();
+    final rawV2 = prefs.getStringList('favourites_v2');
+    if (rawV2 != null) {
+      final entries = _parseFavouriteEntries(rawV2);
+      setState(() {
+        _favourites = entries
+            .where((e) => e['assetPath'] == widget.assetPath)
+            .map((e) => e['index'])
+            .whereType<int>()
+            .toSet();
+      });
+      return;
+    }
+
+    // Migrate legacy favourites to category-aware format
+    final legacy = prefs.getStringList('favourites')?.map(int.parse).toList() ?? [];
+    final migrated = legacy
+        .map((idx) => {
+              'assetPath': widget.assetPath,
+              'appBarTitle': widget.appBarTitle,
+              'index': idx,
+              'title': (idx >= 0 && idx < _songs.length) ? (_songs[idx]['title'] ?? '') : '',
+              'number': (idx >= 0 && idx < _songs.length)
+                  ? _deriveSongNumber(_songs[idx], idx)
+                  : (idx + 1).toString(),
+            })
+        .toList();
+    await prefs.setStringList(
+      'favourites_v2',
+      migrated.map((e) => json.encode(e)).toList(),
+    );
     setState(() {
-      _favourites = prefs.getStringList('favourites')?.map(int.parse).toSet() ?? {};
+      _favourites = legacy.toSet();
     });
   }
 
   Future<void> _toggleFavourite(int index) async {
     final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getStringList('favourites_v2') ?? [];
+    final entries = _parseFavouriteEntries(raw);
+
+    final existingIndex = entries.indexWhere(
+      (e) => e['assetPath'] == widget.assetPath && e['index'] == index,
+    );
+
+    if (existingIndex != -1) {
+      entries.removeAt(existingIndex);
+    } else {
+      final song = (index >= 0 && index < _songs.length) ? _songs[index] : null;
+      entries.add({
+        'assetPath': widget.assetPath,
+        'appBarTitle': widget.appBarTitle,
+        'index': index,
+        'title': song is Map ? (song['title'] ?? '') : '',
+        'number': _deriveSongNumber(song, index),
+      });
+    }
+
+    await prefs.setStringList(
+      'favourites_v2',
+      entries.map((e) => json.encode(e)).toList(),
+    );
+
     setState(() {
-      if (_favourites.contains(index)) {
-        _favourites.remove(index);
-      } else {
-        _favourites.add(index);
-      }
-      prefs.setStringList('favourites', _favourites.map((e) => e.toString()).toList());
+      _favourites = entries
+          .where((e) => e['assetPath'] == widget.assetPath)
+          .map((e) => e['index'])
+          .whereType<int>()
+          .toSet();
     });
   }
 
@@ -153,6 +233,11 @@ class _SongsSwiperPageState extends State<SongsSwiperPage> {
     
     final song = _songs[_currentIndex];
     final title = song['title']?.toString() ?? '';
+    
+    // Handle English songs (e.g., "English Song 1")
+    if (title.startsWith('English Song')) {
+      return title;
+    }
     
     // Extract song number from title (e.g., "பாடல் 1" or "பாடல் 1 (பாமாலை 810)")
     final match = RegExp(r'பாடல்\s+(\d+)').firstMatch(title);

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'songs_swiper.dart';
+import 'main.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -42,7 +42,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     Timer(const Duration(seconds: 3), () {
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => const SongsSwiperPage(),
+          pageBuilder: (context, animation, secondaryAnimation) => const SongbookSelectionPage(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(
               opacity: animation,
@@ -76,77 +76,18 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
             ],
           ),
         ),
-        child: Center(
-          child: FadeTransition(
-            opacity: _fadeAnimation,
-            child: ScaleTransition(
-              scale: _scaleAnimation,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.15),
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
-                          blurRadius: 30,
-                          spreadRadius: 5,
-                        ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.church,
-                      size: 100,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 40),
-                  const Text(
-                    'மனமகிழ் கீதங்கள்',
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      letterSpacing: 2,
-                      shadows: [
-                        Shadow(
-                          color: Colors.black26,
-                          offset: Offset(2, 2),
-                          blurRadius: 4,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  const Text(
-                    'Tamil Songs',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white70,
-                      letterSpacing: 4,
-                    ),
-                  ),
-                  const SizedBox(height: 60),
-                  const CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    strokeWidth: 3,
-                  ),
-                  const SizedBox(height: 20),
-                  const Text(
-                    'Loading...',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.white60,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                ],
-              ),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            // Full-screen GIF background
+            Image.asset(
+              'assets/LoadingScreen.GIF',
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: double.infinity,
+              gaplessPlayback: true,
             ),
-          ),
+          ],
         ),
       ),
     );

@@ -75,7 +75,7 @@ class _IndexPageState extends State<IndexPage> {
   }
 
   Future<void> _loadSongs() async {
-    final String jsonString = await rootBundle.loadString('assets/songs_cleaned.json');
+    final String jsonString = await rootBundle.loadString('assets/manamakizh_songs_cleaned.json');
     setState(() {
       _songs = json.decode(jsonString);
     });
@@ -88,7 +88,7 @@ class _IndexPageState extends State<IndexPage> {
     });
   }
   void _openSong(BuildContext context, String songNumberStr) async {
-    final String jsonString = await rootBundle.loadString('assets/songs_cleaned.json');
+    final String jsonString = await rootBundle.loadString('assets/manamakizh_songs_cleaned.json');
     final List songs = json.decode(jsonString);
     // Find the song in the JSON by number (title: 'பாடல் <number>')
     final songTitle = 'பாடல் $songNumberStr';

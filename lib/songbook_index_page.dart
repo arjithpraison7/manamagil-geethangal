@@ -89,7 +89,37 @@ class _SongbookIndexPageState extends State<SongbookIndexPage> {
   void _openSong(BuildContext context, String songNumberStr) async {
     final String jsonString = await rootBundle.loadString(widget.songsAssetPath);
     final List songs = json.decode(jsonString);
-    final songTitle = 'பாடல் $songNumberStr';
+    
+    // Parse the song number
+    final songNum = int.tryParse(songNumberStr);
+    if (songNum == null) return;
+    
+    // For Sunday school songs, English songs are numbered 50-90
+    // They have titles like "English Song 1", "English Song 2", etc.
+    String songTitle;
+    if (widget.songsAssetPath.contains('sunday_school') && songNum >= 50 && songNum <= 90) {
+      // Calculate the English song number (50 -> 1, 51 -> skip Tamil, 52 -> 2, etc.)
+      // From the index, we can see songs 50, 52-57, 64, etc. are English
+      // Let's just search for the song at the position (songNum - 1) since it's 1-indexed
+      final idx = songNum - 1;
+      if (idx >= 0 && idx < songs.length) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SongsSwiperPage(
+              initialIndex: idx,
+              assetPath: widget.songsAssetPath,
+              appBarTitle: widget.appBarTitle,
+            ),
+          ),
+        );
+        return;
+      }
+    }
+    
+    // For Tamil songs, use the standard "பாடல் X" format
+    songTitle = 'பாடல் $songNumberStr';
+    
     // Try exact match first, then try prefix match for songs with additional info in title
     var idx = songs.indexWhere((s) => (s['title'] ?? '').toString().trim() == songTitle);
     if (idx == -1) {

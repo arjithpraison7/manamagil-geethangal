@@ -80,7 +80,7 @@ class AboutPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
                   const Text(
-                    'மனமகிழ் கீதங்கள்',
+                    'இயேசுவை போற்றும் பாடல்கள்',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -90,7 +90,7 @@ class AboutPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   const Text(
-                    'Tamil Songs App',
+                    'Tamil Christian Songs App',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
@@ -179,6 +179,17 @@ class AboutPage extends StatelessWidget {
                           ),
                           const SizedBox(height: 10),
                           const Text(
+                            'இவைகளை செயலி ஆக வடிவமைத்தது : Arjith Praison',
+                            style: TextStyle(
+                              fontSize: 13,
+                              height: 1.5,
+                              color: Colors.black87,
+                            ),
+                            textAlign: TextAlign.justify,
+                          ),
+
+                          const SizedBox(height: 10),
+                          const Text(
                             'இவைகளை "இயேசுவை போற்றும் பாடல்கள்" என்ற தலைப்பில் "செயலி" ஆக  வெளியிடப்பட்டுள்ளது',
                             style: TextStyle(
                               fontSize: 13,
@@ -199,7 +210,7 @@ class AboutPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: const Text(
-                      'Version 1.0.0',
+                      'Version 1.0.1',
                       style: TextStyle(
                         fontSize: 13,
                         color: Colors.deepPurple,

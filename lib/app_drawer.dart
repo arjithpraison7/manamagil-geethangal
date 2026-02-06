@@ -1,10 +1,14 @@
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 import 'index_page.dart';
 import 'favourites_page.dart';
 import 'songs_swiper.dart';
 import 'theme_page.dart';
 import 'about_page.dart';
+import 'help_page.dart';
 import 'main.dart';
 import 'songbook_index_page.dart';
 
@@ -131,7 +135,6 @@ class AppDrawer extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
             onTap: () async {
-              Navigator.pop(context);
               final controller = TextEditingController();
               final result = await showDialog<String>(
                 context: context,
@@ -162,13 +165,21 @@ class AppDrawer extends StatelessWidget {
                 if (idx == -1) {
                   idx = songs.indexWhere((s) => (s['title'] ?? '').toString().trim().startsWith('$songTitle '));
                 }
-                if (idx != -1 && onSongSelected != null) {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => SongsSwiperPage(initialIndex: idx),
-                    ),
-                  );
+                if (idx != -1) {
+                  // Use root navigator context to avoid deactivated context
+                  final navContext = Navigator.of(context, rootNavigator: true).context;
+                  SchedulerBinding.instance.addPostFrameCallback((_) {
+                    Navigator.pushReplacement(
+                      navContext,
+                      MaterialPageRoute(
+                        builder: (_) => SongsSwiperPage(
+                          initialIndex: idx,
+                          assetPath: currentSongsAssetPath ?? 'assets/manamakizh_songs_cleaned.json',
+                          appBarTitle: currentAppBarTitle ?? 'Songs',
+                        ),
+                      ),
+                    );
+                  });
                 }
               }
             },
@@ -179,26 +190,26 @@ class AppDrawer extends StatelessWidget {
               'Favourites',
               overflow: TextOverflow.ellipsis,
             ),
-            onTap: () {
+            onTap: () async {
               Navigator.pop(context);
-              final favs = favourites.map((i) => {
-                'title': songs[i]['title'],
-                'number': (i + 1).toString(),
-                'index': i,
-              }).toList();
+              final prefs = await SharedPreferences.getInstance();
+              final raw = prefs.getStringList('favourites_v2') ?? [];
+              final favs = <Map<String, dynamic>>[];
+              for (final item in raw) {
+                try {
+                  final decoded = json.decode(item);
+                  if (decoded is Map<String, dynamic>) {
+                    favs.add(decoded);
+                  }
+                } catch (_) {
+                  // ignore malformed
+                }
+              }
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                   builder: (_) => FavouritesPage(
                     favourites: favs,
-                    onSongTap: (idx) {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => SongsSwiperPage(initialIndex: idx),
-                        ),
-                      );
-                    },
                   ),
                 ),
               );
@@ -294,6 +305,10 @@ class AppDrawer extends StatelessWidget {
             ),
             onTap: () {
               Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const HelpPage()),
+              );
             },
           ),
           ListTile(
